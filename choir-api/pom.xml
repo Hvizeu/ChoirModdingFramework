@@ -9,12 +9,12 @@
   <version>0.4.3</version>
   <name>Choir API</name>
   <description>Vanilla-type-free public API for mods that optionally integrate with Choir.</description>
-  <url>https://github.com/Hvizeu/ChoirModdingFramework</url>
+  <url>https://github.com/Hvizeu/ChoirModdingFrameworkMaven</url>
 
   <licenses>
     <license>
       <name>Choir Modding Framework Source-Available Contribution License 1.0</name>
-      <url>https://github.com/Hvizeu/ChoirModdingFramework/blob/main/LICENSE.txt</url>
+      <url>https://github.com/Hvizeu/ChoirModdingFrameworkMaven/blob/main/LICENSE</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -24,9 +24,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/Hvizeu/ChoirModdingFramework.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/Hvizeu/ChoirModdingFramework.git</developerConnection>
-    <url>https://github.com/Hvizeu/ChoirModdingFramework</url>
+    <connection>scm:git:https://github.com/Hvizeu/ChoirModdingFrameworkMaven.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/Hvizeu/ChoirModdingFrameworkMaven.git</developerConnection>
+    <url>https://github.com/Hvizeu/ChoirModdingFrameworkMaven</url>
     <tag>HEAD</tag>
   </scm>
 
