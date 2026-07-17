@@ -1,0 +1,212 @@
+CHOIR MODDING FRAMEWORK 0.4.2
+PLAYER AND MOD-AUTHOR QUICKSTART
+
+Compatibility
+-------------
+
+Choir 0.4.2 supports Songs of Syx 0.71.44 only. Its version-sensitive adapters
+and vanilla class shadows are fingerprint-gated. An unsupported game build is
+rejected instead of being treated as compatible.
+
+Choir is a content-free framework. It adds no race, room, resource, recipe,
+production chain, terrain, technology, or balance content by itself.
+
+
+Installation for players
+------------------------
+
+1. Subscribe to or install Choir Modding Framework as a separate mod.
+2. Keep Choir enabled whenever an enabled mod declares it as required.
+3. Put Choir at the foundation of the profile. In ChoirLauncher this means the
+   lowest priority, normally Priority 1. Consumer and overhaul mods belong later
+   at higher priorities.
+4. Never embed Choir inside another mod folder and do not enable an obsolete
+   standalone ModMenuFramework copy alongside Choir.
+5. Keep required content providers enabled when loading a save that used them.
+
+Choir writes diagnostics to:
+
+  %APPDATA%\songsofsyx\logs\ChoirRuntime-*.log
+
+Global Mod Options values are stored under:
+
+  %APPDATA%\songsofsyx\Choir\options\global
+
+
+Important save rule
+-------------------
+
+Choir does not make removal of content mods from existing saves safe. If a mod
+registered a room or another save-critical definition, that provider must remain
+enabled in the same compatible configuration. Removing a building mod from a save
+can legitimately make the save unloadable.
+
+
+Using Choir from another mod
+----------------------------
+
+Compile against ChoirModdingFramework.jar but do not copy, shade, relocate, or
+embed Choir classes in the consumer JAR. Public consumer code may import only
+choir.api packages. Do not import choir.internal or choir.adapter.
+
+Place this manifest in the consumer mod:
+
+  V71/choir/core-platform.properties
+
+Example:
+
+  formatVersion=1
+  modId=example.production
+  displayName=Example Production
+  version=1.0.0
+  requires=choir.framework@>=0.4.2
+  optional=
+  incompatible=
+  capabilities=example.production.options
+  gameVersion=0.71.44
+  choirApi=>=0.4.2
+
+Use stable, case-sensitive IDs. Do not change a released provider ID casually.
+
+
+Adding a page to Mod Options
+----------------------------
+
+For initial-main-menu discovery, add:
+
+  V71/choir/options-provider.properties
+
+Example:
+
+  formatVersion=1
+  providerId=example.production
+  displayName=Example Production
+  description=Configures the Example Production mod.
+
+Register the actual settings schema from the consumer script when it initializes:
+
+  import choir.api.options.ChoirOptions;
+  import choir.api.options.OptionApplyMode;
+  import choir.api.options.OptionRegistrationResult;
+  import choir.api.options.OptionSchema;
+  import choir.api.options.OptionSetting;
+
+  public final class ExampleOptions {
+      public static final String PROVIDER_ID = "example.production";
+      public static final String ENABLED = "enabled";
+      public static final String OUTPUT = "outputMultiplier";
+
+      private static volatile boolean enabled = true;
+      private static volatile double outputMultiplier = 1.0;
+      private static boolean registered;
+
+      public static synchronized void register() {
+          if (registered) return;
+
+          OptionSchema schema = OptionSchema.builder(
+                  PROVIDER_ID, "Example Production")
+              .description("Configures this mod.")
+              .schemaVersion(1)
+              .add(OptionSetting.section("section.general", "General"))
+              .add(OptionSetting.bool(ENABLED, "Enabled", true)
+                  .description("Enables this mod's optional runtime effect.")
+                  .applyMode(OptionApplyMode.IMMEDIATE)
+                  .build())
+              .add(OptionSetting.floating(
+                      OUTPUT, "Output Multiplier", 1.0, 0.25, 4.0, 0.05)
+                  .description("Multiplies output while leaving inputs unchanged.")
+                  .applyMode(OptionApplyMode.IMMEDIATE)
+                  .build())
+              .build();
+
+          OptionRegistrationResult result = ChoirOptions.register(schema);
+          if (result != OptionRegistrationResult.ACCEPTED
+                  && result != OptionRegistrationResult.IDEMPOTENT) {
+              throw new IllegalStateException(
+                  "Choir Options registration failed: " + result);
+          }
+
+          enabled = ChoirOptions.getBoolean(PROVIDER_ID, ENABLED, true);
+          outputMultiplier = ChoirOptions.getDouble(
+              PROVIDER_ID, OUTPUT, 1.0);
+
+          ChoirOptions.subscribe(PROVIDER_ID,
+              (providerId, key, oldValue, newValue) -> {
+                  if (ENABLED.equals(key)) {
+                      enabled = ((Boolean) newValue).booleanValue();
+                  }
+                  if (OUTPUT.equals(key)) {
+                      outputMultiplier = ((Number) newValue).doubleValue();
+                  }
+              });
+          registered = true;
+      }
+
+      public static double adjustedOutput(double baseOutput) {
+          return enabled ? baseOutput * outputMultiplier : baseOutput;
+      }
+  }
+
+Choir generates the menu, setting rows, descriptions, separators, scrolling,
+Apply, Cancel, Reset Page, Back, right-click, and Escape behavior. Consumer mods
+declare schemas and read typed values; they do not construct Songs of Syx UI
+objects.
+
+Available setting declarations include Boolean, integer, floating-point, text,
+choice, section, information, and read-only rows. Consumers must make repeated
+registration, listener handling, and Apply behavior idempotent.
+
+
+Other public domains
+--------------------
+
+Choir 0.4.2 also exposes stable-ID-oriented public APIs for:
+
+- enabled-mod manifests, dependencies, incompatibilities, and capabilities;
+- typed lifecycle notifications;
+- deterministic patch composition;
+- data-backed race declarations and race boost multipliers;
+- FOOD and DRINK preference composition for existing races;
+- presentation-only named resource display groups;
+- one bounded PASSIVE_DECORATION room family whose provider owns all data,
+  sprites, text, and required sound records.
+
+Public APIs avoid exposing live vanilla objects. Version-sensitive materialization
+belongs to Choir's V71.44 adapter. A consumer must declare only capabilities it
+actually provides and must handle rejected, conflicting, missing-target, and
+unsupported-version results as real diagnostics.
+
+
+Optional Choir support
+----------------------
+
+If a mod must also work without Choir, do not put direct Choir references in the
+script class Songs of Syx discovers. Probe for the public entry point first and
+reflectively load a small consumer-owned adapter that contains the direct Choir
+imports. Without Choir, use the mod's documented neutral fallback. Never copy
+Choir classes into the consumer JAR.
+
+
+Consumer package checklist
+--------------------------
+
+  ConsumerMod/
+    _Info.txt
+    V71/
+      choir/
+        core-platform.properties
+        options-provider.properties        when Mod Options are used
+      script/
+        ConsumerMod.jar
+
+Before publishing, verify that the consumer JAR contains no choir/api,
+choir/internal, or choir/adapter classes and no unrelated vanilla class shadows.
+
+
+Support boundary
+----------------
+
+This quickstart documents the public 0.4.2 surface at a high level. Exact-fingerprint
+compatibility is limited to Songs of Syx 0.71.44. Do not report behavior from a
+different game build as a supported Choir configuration.
+
