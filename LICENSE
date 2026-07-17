@@ -1,0 +1,85 @@
+Choir Modding Framework Source-Available Contribution License 1.0
+
+Copyright (c) 2026 Henrique Vizeu. All rights reserved.
+
+This is a source-available license. It is not an open-source license.
+
+1. Permission granted
+
+Subject to the restrictions below, you may:
+
+a. download and run an official Choir Modding Framework release;
+b. compile a Songs of Syx mod against Choir's public choir.api packages;
+c. distribute an original mod that depends on Choir, provided that the mod does
+   not embed, shade, rename, or redistribute Choir classes or Choir's JAR and
+   clearly declares Choir as a separate dependency;
+d. view, clone, and privately modify Choir source for evaluation or to prepare a
+   contribution to the official project;
+e. create and maintain a GitHub fork solely to develop, demonstrate, or submit
+   proposed contributions to the official project; and
+f. submit patches and pull requests to the official project.
+
+"Software" means the original Choir Modding Framework source code,
+documentation, binary artifacts, and project-owned assets distributed by the
+copyright holder.
+
+2. Redistribution of Choir is prohibited
+
+Except for a GitHub fork used only as permitted in Section 1, you may not,
+without prior written authorization from the copyright holder:
+
+a. distribute, publish, mirror, re-host, sublicense, sell, lease, or otherwise
+   make Choir or a substantial portion of it available independently;
+b. distribute modified or unmodified Choir source code, classes, or binary
+   builds;
+c. embed or shade Choir into another mod or application;
+d. publish releases from a fork or use a fork as an independent distribution;
+e. bundle Choir with another mod, mod pack, installer, or service; or
+f. authorize another person or entity to do any of the above.
+
+Linking players to an official Choir release or Steam Workshop item is allowed.
+To request redistribution permission, contact the project owner through an
+official Choir distribution page.
+
+3. Attribution and representation
+
+You must preserve all copyright, authorship, license, and third-party notices.
+You may not claim that you created the original Software, conceal its origin, or
+represent a modified version as an official Choir release. You may not use the
+Choir name or project identity to imply endorsement.
+
+4. Contributions
+
+By submitting a contribution to the official Choir project, you:
+
+a. represent that you have the right to submit it;
+b. grant the copyright holder a perpetual, worldwide, irrevocable,
+   royalty-free license to use, reproduce, modify, distribute, sublicense, and
+   incorporate the contribution into Choir; and
+c. agree that accepted contributions may be distributed under this license or
+   a later Choir license.
+
+Accepted contributors will be credited through project history, release notes,
+contributor records, or another reasonable project record.
+
+5. Third-party material
+
+This license applies only to material owned or controlled by the Choir copyright
+holder. Songs of Syx names, code, and other third-party material remain subject
+to their respective rights and terms. This license grants no rights to the Songs
+of Syx game or trademarks.
+
+6. Termination
+
+Your permissions under this license terminate automatically if you violate its
+terms. The copyright holder may restore permission in writing. Sections 2, 3,
+4, 5, and 7 survive termination where applicable.
+
+7. Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR
+IN CONNECTION WITH THE SOFTWARE OR ITS USE.

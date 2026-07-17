@@ -1,0 +1,35 @@
+# Generated Java/Maven output and release binaries
+/target/
+**/target/
+*.class
+*.jar
+*.zip
+*.log
+
+# Internal-only material
+AGENTS.md
+IntegrationTests/
+Tools/
+Baseline/
+Release/
+Documentation/Validation/
+Documentation/Investigation/
+RuntimeLogs/
+
+# Editor and operating-system state
+.idea/
+.vs/
+*.iml
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Credentials and signing material
+*.asc
+*.gpg
+*.pfx
+*.p12
+*.key
+*.pem
+.env
+.env.*
