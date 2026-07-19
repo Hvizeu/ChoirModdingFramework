@@ -2,6 +2,9 @@ package choir.api.spi;
 
 import choir.api.Capability;
 import choir.api.RoomRegistrationProbe;
+import choir.api.combat.CombatDamageModifier;
+import choir.api.combat.CombatDamageRegistrationResult;
+import choir.api.combat.CombatDamageRuntimeSnapshot;
 import choir.api.experimental.resources.ResourceDisplayAssignment;
 import choir.api.experimental.resources.ResourceDisplayEffectiveSnapshot;
 import choir.api.experimental.resources.ResourceDisplayGroupDefinition;
@@ -20,14 +23,25 @@ import choir.api.patch.PatchRegistrationResult;
 import choir.api.patch.PatchResolution;
 import choir.api.patch.PatchTarget;
 import choir.api.platform.PlatformSnapshot;
+import choir.api.production.MultiOutputProductionRuntimeSnapshot;
+import choir.api.production.MultiOutputRegistrationResult;
+import choir.api.production.MultiOutputRoomDeclaration;
 import choir.api.race.RaceBoostPatch;
 import choir.api.race.RaceDeclaration;
+import choir.api.race.RaceHomeResourceRequirement;
 import choir.api.race.RacePreferencePatch;
+import choir.api.race.RaceNumericPatch;
+import choir.api.race.RaceRelationshipPatch;
 import choir.api.race.RaceRegistrationResult;
 import choir.api.race.RaceRuntimeSnapshot;
+import choir.api.race.RaceStandingPatch;
+import choir.api.race.RaceTextPatch;
 import choir.api.room.RoomDeclaration;
 import choir.api.room.RoomRegistrationResult;
 import choir.api.room.RoomRegistrationSnapshot;
+import choir.api.storage.MultiResourceStorageDeclaration;
+import choir.api.storage.MultiResourceStorageRegistrationResult;
+import choir.api.storage.MultiResourceStorageRuntimeSnapshot;
 
 /**
  * Runtime-owned implementation contract for Choir's public facades.
@@ -49,7 +63,18 @@ public interface ChoirRuntimeService {
 	RaceRegistrationResult declareDataBackedRace(RaceDeclaration declaration);
 	RaceRegistrationResult patchRaceBoost(RaceBoostPatch patch);
 	RaceRegistrationResult patchRacePreference(RacePreferencePatch patch);
+	RaceRegistrationResult patchRaceText(RaceTextPatch patch);
+	RaceRegistrationResult patchRaceRelationship(RaceRelationshipPatch patch);
+	RaceRegistrationResult patchRaceNumericAttribute(RaceNumericPatch patch);
+	RaceRegistrationResult patchRaceStanding(RaceStandingPatch patch);
+	RaceRegistrationResult requireRaceHomeResource(RaceHomeResourceRequirement requirement);
 	RaceRuntimeSnapshot raceRuntimeSnapshot();
+	CombatDamageRegistrationResult registerCombatDamageModifier(CombatDamageModifier modifier);
+	CombatDamageRuntimeSnapshot combatDamageRuntimeSnapshot();
+	MultiOutputRegistrationResult registerMultiOutputRoom(MultiOutputRoomDeclaration declaration);
+	MultiOutputProductionRuntimeSnapshot multiOutputProductionRuntimeSnapshot();
+	MultiResourceStorageRegistrationResult registerMultiResourceStorage(MultiResourceStorageDeclaration declaration);
+	MultiResourceStorageRuntimeSnapshot multiResourceStorageRuntimeSnapshot();
 
 	<C> LifecycleSubscriptionResult subscribeLifecycle(String providerId, String subscriptionId,
 			LifecycleEvent<C> event, int priority, LifecycleListener<C> listener);

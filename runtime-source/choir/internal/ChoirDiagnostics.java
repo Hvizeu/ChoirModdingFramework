@@ -20,7 +20,7 @@ import snake2d.LOG;
  * evidence for a later Phase 1 review.
  */
 public final class ChoirDiagnostics {
-	public static final String BUILD_ID = "choir-v71_44-maven-api-runtime-split-20260717.19";
+	public static final String BUILD_ID = "choir-v71_44-household-resource-requirements-20260719.1";
 	private static final DateTimeFormatter FILE_TIME = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS").withZone(ZoneOffset.UTC);
 	private static Path sessionLog;
 	private static boolean buildIdentityLogged;
@@ -30,6 +30,20 @@ public final class ChoirDiagnostics {
 
 	public static synchronized void info(String text) { emit(false, text); }
 	public static synchronized void error(String text) { emit(true, text); }
+	public static synchronized void failure(String context, Throwable failure) {
+		StringBuilder detail = new StringBuilder(context);
+		Throwable current = failure;
+		int depth = 0;
+		while (current != null && depth++ < 8) {
+			detail.append(" cause[").append(depth).append("]=")
+					.append(current.getClass().getName()).append(':').append(current.getMessage());
+			current = current.getCause();
+		}
+		StackTraceElement[] trace = failure == null ? new StackTraceElement[0] : failure.getStackTrace();
+		for (int i = 0; i < Math.min(12, trace.length); i++)
+			detail.append(" at=").append(trace[i]);
+		error(detail.toString());
+	}
 	public static synchronized void beginValidationSession() {
 		if (validationSessionId != null) return;
 		validationSessionId = "choir-" + UUID.randomUUID().toString();

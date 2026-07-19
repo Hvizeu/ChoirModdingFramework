@@ -2,8 +2,14 @@
 
 Choir is a content-free compatibility framework for Songs of Syx `0.71.44`.
 It gives compatible mods a stable public Java API for options, dependency and
-capability declarations, lifecycle events, composition, selected race patches,
-room declarations, and presentation-only resource display groups.
+capability declarations, lifecycle events, composition, Mod Options, race
+declarations and user-facing patches, passive room declarations, presentation-only
+resource display groups, tactical combat damage composition, section-based
+stockpiles, and shared-capacity production storage. It also supports bounded
+two-to-five-output execution for opt-in workshop and refiner recipes, with all
+outputs stored internally before ordinary loose overflow.
+
+Current development version: `0.9.0`, targeting Songs of Syx `0.71.44` only.
 
 ## Players
 

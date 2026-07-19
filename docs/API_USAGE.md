@@ -1,6 +1,6 @@
 # Using the Choir API
 
-Choir `0.6.0` is a compatibility framework for Songs of Syx `0.71.44`. It gives
+Choir `0.9.0` is a compatibility framework for Songs of Syx `0.71.44`. It gives
 mods stable Java APIs for features that would otherwise require several mods to
 patch the same version-sensitive game code.
 
@@ -25,6 +25,8 @@ Your mod owns its gameplay content and settings. Choir owns the shared plumbing.
 | Add a passive decorative room | [Room API](#passive-decoration-rooms) | `choir.api.room` |
 | Group resources in supported UI lists | [Resource display groups](#resource-display-groups-experimental) | `choir.api.experimental.resources` |
 | Multiply player or enemy tactical damage | [Combat damage](#tactical-combat-damage) | `choir.api.combat` |
+| Give one workshop/refiner recipe two to five outputs | [Multi-output production](#multi-output-workshop-and-refiner-production) | `choir.api.production` |
+| Let one shelf hold several kinds of resources | [Multi-resource storage](#multi-resource-storage) | `choir.api.storage` |
 
 The public API source is available under [`choir-api`](../choir-api). Consumer
 mods should never import `choir.internal`, `choir.adapter`, or `choir.api.spi`.
@@ -40,13 +42,13 @@ copied into your mod JAR:
 <dependency>
   <groupId>io.github.hvizeu</groupId>
   <artifactId>choir-api</artifactId>
-  <version>0.6.0</version>
+  <version>0.9.0</version>
   <scope>provided</scope>
 </dependency>
 ```
 
 If the current API artifact is not yet available from your configured Maven
-repository, compile against the official `choir-api-0.6.0.jar` locally. Do not use
+repository, compile against the official `choir-api-0.9.0.jar` locally. Do not use
 the runtime module as a compile dependency. See [Maven usage](MAVEN.md) for the
 complete setup.
 
@@ -79,7 +81,7 @@ formatVersion=1
 modId=example.mod
 displayName=Example Mod
 version=1.0.0
-requires=choir.framework@>=0.6.0
+requires=choir.framework@>=0.9.0
 optional=
 incompatible=
 capabilities=example.mod.options
@@ -128,7 +130,7 @@ formatVersion=1
 modId=example.overhaul
 displayName=Example Overhaul
 version=2.1.0
-requires=choir.framework@>=0.6.0,example.library@>=1.2.0
+requires=choir.framework@>=0.9.0,example.library@>=1.2.0
 optional=example.compatibility
 incompatible=example.old-overhaul
 capabilities=example.overhaul.options,example.overhaul.races
@@ -165,6 +167,12 @@ There are two different capability checks:
 ```java
 boolean choirSupportsCombat = Choir.hasCapability(
     Capability.COMBAT_TACTICAL_DAMAGE_MULTIPLIERS);
+
+boolean choirSupportsMultiOutput = Choir.hasCapability(
+    Capability.PRODUCTION_MULTI_OUTPUT_ROOMS);
+
+boolean choirSupportsMixedShelves = Choir.hasCapability(
+    Capability.STORAGE_MULTI_RESOURCE_TILES);
 
 boolean anotherModIsActive = ChoirPlatform.hasCapability(
     "example.overhaul.races");
@@ -380,7 +388,7 @@ values.
 
 ## Race registration and patching
 
-`ChoirRaces` API version 3 lets independent mods contribute to existing or
+`ChoirRaces` API version 4 lets independent mods contribute to existing or
 data-backed races without replacing each other's complete records.
 
 Use one result helper:
@@ -422,6 +430,30 @@ checkRace(ChoirRaces.patchBoost(new RaceBoostPatch(
 ```
 
 Boost factors must be positive and finite. Independent factors multiply.
+
+### Add a household resource requirement
+
+Use a household requirement when residents should buy, keep, wear out, and replace
+a normal resource through the game's existing home-furnishing system. This does
+not create free items and it is not a construction cost. The player still chooses
+the desired furnishing target in the normal household UI.
+
+```java
+checkRace(ChoirRaces.requireHomeResource(new RaceHomeResourceRequirement(
+    "example.mod",
+    "human-citizen-pillows",
+    "HUMAN",
+    RaceHomeResidentClass.CITIZEN,
+    "PILLOWS",
+    1,
+    RaceMissingTargetPolicy.FAIL)));
+```
+
+The amount is the maximum per resident. `CITIZEN`, `NOBLE`, and `SLAVE` are
+separate household classes, so a mod can give nobles a different maximum. Several
+mods may request the same resource safely: Choir keeps the largest requested
+maximum, preserves existing household-resource order, and does not remove vanilla
+requirements. Amounts must be whole numbers from 1 through 15.
 
 ### Change food or drink preferences
 
@@ -646,6 +678,159 @@ supported interfaces to vanilla presentation.
 This package is still experimental. Check runtime capability/state and be prepared
 for a future migration to a stable package.
 
+## Multi-output workshop and refiner production
+
+Choir can make one existing, normal-data-backed workshop or refiner recipe
+physically produce two to five outputs. Your mod still owns the room and its
+`INDUSTRIES` data. Choir validates the exact recipe and supplies the narrow
+V71.44 execution hook.
+
+The recipe must have exactly one input. Choir `0.9.0` stores the primary and
+secondary products in the same shared internal shelf pool. Only units that do not
+fit become ordinary loose, haulable resource piles at the work tile.
+
+```java
+import choir.api.production.ChoirProduction;
+import choir.api.production.MultiOutputRegistrationResult;
+import choir.api.production.MultiOutputRoomDeclaration;
+import choir.api.production.ProductionRoomFamily;
+
+MultiOutputRegistrationResult result =
+    ChoirProduction.registerMultiOutputRoom(
+        MultiOutputRoomDeclaration.dataBacked(
+            "example.production",
+            "sawmill-byproducts",
+            "EXAMPLE_SAWMILL",
+            ProductionRoomFamily.WORKSHOP,
+            0,
+            "WOOD",
+            "PLANK",
+            "BARK",
+            "SAWDUST"));
+
+if (result != MultiOutputRegistrationResult.ACCEPTED
+        && result != MultiOutputRegistrationResult.IDEMPOTENT) {
+    throw new IllegalStateException(
+        "Multi-output registration failed: " + result);
+}
+```
+
+The IDs must match the live recipe exactly:
+
+- provider and declaration IDs are stable lowercase IDs;
+- room and resource IDs are uppercase V71 IDs;
+- `industryIndex` is zero-based within that room's industries;
+- the input and full ordered output list must match the data;
+- output resource IDs must be distinct.
+
+`WORKSHOP` and `REFINER` are the only supported families. Registration of an
+identical descriptor is idempotent. Reusing its identity with different content,
+or letting a second declaration claim the same room/industry target, is rejected.
+
+At runtime the flow is:
+
+```text
+Vanilla consumes input once
+-> vanilla works and stores output 0 once
+-> Choir works outputs 1..4 once
+-> Choir stores outputs 1..4 in the room shelves
+-> vanilla loose-resource entities represent overflow only
+```
+
+All outputs consume one real shelf capacity; Choir never creates separate capacity
+per resource. When every shelf is full, the room's production storage gate closes.
+Leave enough walking and hauling capacity around work tiles for genuine overflow.
+
+You can inspect stable diagnostics without retaining any game objects:
+
+```java
+var snapshot = ChoirProduction.runtimeSnapshot();
+System.out.println("Ready: " + snapshot.adapterReady());
+System.out.println("Plan: " + snapshot.planSignature());
+System.out.println("Cycles: " + snapshot.completedCycles());
+System.out.println("Secondary units: " + snapshot.emittedUnits());
+System.out.println("Failures: " + snapshot.failures());
+```
+
+API v1 does not create recipes or resources, append missing outputs, support
+multi-input recipes, or patch farms, mines, fisheries, orchards, hunters,
+woodcutters, pastures, production statistics, regional rates, or AI.
+
+## Multi-resource storage
+
+Choir `0.9.0` replaces the idea that one physical stockpile shelf can hold only
+one kind of item. The easiest mental model is one box divided into labelled
+sections. Each section belongs to one resource and owns a fixed part of the same
+real box.
+
+Most mods need no storage code. When Choir is installed:
+
+- stockpile shelves can mix resources selected for that stockpile;
+- plus and minus assign one section, not one whole shelf;
+- repeated sections for a resource are packed onto one shelf before another is
+  opened, and hauling prefers a partly filled compatible shelf;
+- pathfinding asks the shelf for the exact requested resource;
+- deliveries, cancellations, and pickups keep resource-specific reservations;
+- stockpile totals and shelf graphics include every stored resource;
+- registered multi-output workshops and refiners store every output internally
+  before creating loose overflow.
+
+The default is eight resource kinds/sections per tile. If your own room needs
+another limit, choose a value from 1 through 16.
+
+In a stockpile, one base shelf therefore shows `Storage sections 0/8`, and every
+section holds 10 of its 80 total items. Five wood sections and three stone
+sections give wood 50 spaces and stone 30. Their resource rows show values such
+as `42/50` and `18/30`. A ninth section cannot be assigned, so physical capacity
+is never multiplied.
+
+```java
+import choir.api.storage.ChoirStorage;
+import choir.api.storage.MultiResourceStorageDeclaration;
+import choir.api.storage.MultiResourceStorageRegistrationResult;
+
+MultiResourceStorageRegistrationResult result =
+    ChoirStorage.registerRoomPolicy(
+        MultiResourceStorageDeclaration.forRoom(
+            "example.production",      // provider manifest ID
+            "sawmill-shelf-kinds",     // stable declaration ID
+            "EXAMPLE_SAWMILL",         // exact room key
+            5));                        // kinds/sections per tile, not extra capacity
+
+if (result != MultiResourceStorageRegistrationResult.ACCEPTED
+        && result != MultiResourceStorageRegistrationResult.IDEMPOTENT) {
+    throw new IllegalStateException("Storage policy rejected: " + result);
+}
+```
+
+`1` recreates a one-kind policy, `8` is the default, and `16` is the hard cap.
+For stockpiles, the real shelf capacity is divided proportionally across those
+sections. Production-room shelves retain a dynamic shared pool so automatic
+outputs can use any remaining physical space. The setting does not increase item
+capacity or make a specialized export, transport, or military buffer accept
+unrelated goods. Acceptance still belongs to the room.
+
+If a custom/upgraded capacity does not divide evenly, Choir rounds each
+resource's quota down. That can leave a few remainder spaces unused on a mixed
+shelf, but it keeps the result deterministic and within physical capacity.
+
+Use stable diagnostics when troubleshooting:
+
+```java
+var snapshot = ChoirStorage.runtimeSnapshot();
+System.out.println("Ready: " + snapshot.adapterReady());
+System.out.println("Live cells: " + snapshot.liveCells());
+System.out.println("Stored units: " + snapshot.storedUnits());
+System.out.println("Pickup reservations: " + snapshot.pickupReservations());
+System.out.println("Incoming reservations: " + snapshot.incomingReservations());
+System.out.println("Failures: " + snapshot.failures());
+```
+
+Old one-resource records and Choir 0.8.0/0.8.1 boolean assignments migrate
+automatically. Existing stockpile contents receive enough sections to preserve
+their units when possible. Choir saves stable resource IDs and fails explicitly
+if a saved resource no longer exists instead of silently deleting its stack.
+
 ## Tactical combat damage
 
 Choir `0.6.0` can compose deterministic multipliers for tactical settlement
@@ -735,7 +920,9 @@ damage setting as an auto-resolve setting.
 ## Make Choir optional
 
 If Choir is required, direct `choir.api.*` imports are appropriate and your
-manifest should require `choir.framework@>=0.6.0`.
+manifest should require the first framework version containing every API you use.
+For shared internal multi-output shelves or the storage API, require
+`choir.framework@>=0.9.0`.
 
 If Choir support is optional, keep every Choir type out of the Songs of
 Syx-discovered script class, including its fields, parameters, return types,
@@ -810,6 +997,8 @@ composition does not use launcher order as the final conflict tie-breaker.
 | Resource stays in a native group | Verify the public stable ID and inspect the effective snapshot |
 | Save fails after removing a room provider | Re-enable the provider; V71.44 does not support that removal |
 | Combat factor never applies | Verify capability, category, sides, tactical humanoid combat, and the runtime snapshot |
+| A mixed shelf is never selected | Confirm the resource is accepted by that stockpile and the storage capability is ready |
+| A room policy is rejected | Keep provider/declaration IDs stable and allow only one policy owner per room key |
 | Fingerprint mismatch | Use the exact supported game version; never bypass the compatibility gate |
 
 For installation and game-version details, see [Installation](INSTALLATION.md) and
@@ -821,11 +1010,12 @@ not redistributed here.
 
 Choir currently covers manifests and dependency resolution, lifecycle events,
 generic typed composition, native Mod Options, selected race declarations and
-patches, passive decoration rooms, experimental resource presentation groups, and
-tactical humanoid damage multipliers.
+patches, passive decoration rooms, experimental resource presentation groups,
+tactical humanoid damage multipliers, bounded workshop/refiner multi-output
+execution, section-based stockpiles, and shared-capacity production shelves.
 
 It does not provide arbitrary reflection, unrestricted UI injection, production
-output composition, generic storage/save codecs, technology graph editing, AI
+output composition, arbitrary save codecs, technology graph editing, general AI
 patching, world auto-resolve damage categories, or a general-purpose room factory.
 Those boundaries are deliberate: a small API with a verified integration point is
 safer for players and easier for modders to compose.

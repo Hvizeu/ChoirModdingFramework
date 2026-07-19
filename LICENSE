@@ -1,4 +1,4 @@
-Choir Modding Framework Source-Available Contribution License 1.0
+Choir Modding Framework Source-Available Contribution License 1.1
 
 Copyright (c) 2026 Henrique Vizeu. All rights reserved.
 
@@ -19,13 +19,22 @@ e. create and maintain a GitHub fork solely to develop, demonstrate, or submit
    proposed contributions to the official project; and
 f. submit patches and pull requests to the official project.
 
+g. allow Maven Central and its delivery infrastructure, including repository
+   mirrors, indexers, content-delivery networks, and ordinary local dependency
+   caches, to copy, host, and deliver the unmodified official `choir-api`
+   artifacts published by the copyright holder under the
+   `io.github.hvizeu:choir-api` coordinate. This authorization covers the main,
+   source, Javadoc, POM, checksum, and signature artifacts only; it does not
+   grant any third party the right to publish Choir releases or modified builds.
+
 "Software" means the original Choir Modding Framework source code,
 documentation, binary artifacts, and project-owned assets distributed by the
 copyright holder.
 
 2. Redistribution of Choir is prohibited
 
-Except for a GitHub fork used only as permitted in Section 1, you may not,
+Except for a GitHub fork used only as permitted in Section 1 and the official
+Maven Central delivery authorization in Section 1(g), you may not,
 without prior written authorization from the copyright holder:
 
 a. distribute, publish, mirror, re-host, sublicense, sell, lease, or otherwise

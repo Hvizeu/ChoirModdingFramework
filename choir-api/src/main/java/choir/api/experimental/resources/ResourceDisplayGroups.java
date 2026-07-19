@@ -3,8 +3,9 @@ package choir.api.experimental.resources;
 import choir.api.spi.ChoirRuntimeServices;
 
 /**
- * Experimental registration facade. V71.44 currently consumes the model only
- * in the right-side settlement resource panel; stockpile selectors remain vanilla.
+ * Experimental registration facade. V71.44 consumes the presentation model in
+ * the right-side Mini/Full resource panels and the stockpile/Crates assignment
+ * selector. Canonical resource identity and stockpile state remain vanilla.
  */
 public final class ResourceDisplayGroups {
 	private ResourceDisplayGroups() { }

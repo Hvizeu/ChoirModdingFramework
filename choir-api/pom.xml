@@ -6,21 +6,25 @@
 
   <groupId>io.github.hvizeu</groupId>
   <artifactId>choir-api</artifactId>
-  <version>0.4.3</version>
+  <version>0.9.0</version>
   <name>Choir API</name>
   <description>Vanilla-type-free public API for mods that optionally integrate with Choir.</description>
   <url>https://github.com/Hvizeu/ChoirModdingFrameworkMaven</url>
 
   <licenses>
     <license>
-      <name>Choir Modding Framework Source-Available Contribution License 1.0</name>
+      <name>Choir Modding Framework Source-Available Contribution License 1.1</name>
       <url>https://github.com/Hvizeu/ChoirModdingFrameworkMaven/blob/main/LICENSE</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
 
   <developers>
-    <developer><id>hvizeu</id><name>Henrique Vizeu</name></developer>
+    <developer>
+      <id>hvizeu</id>
+      <name>Henrique Vizeu</name>
+      <email>henrique.vizeu@gmail.com</email>
+    </developer>
   </developers>
 
   <scm>
@@ -91,6 +95,13 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>${maven.gpg-plugin.version}</version>
+            <configuration>
+              <bestPractices>true</bestPractices>
+              <gpgArguments>
+                <arg>--pinentry-mode</arg>
+                <arg>loopback</arg>
+              </gpgArguments>
+            </configuration>
             <executions>
               <execution>
                 <id>sign-api-artifacts</id>

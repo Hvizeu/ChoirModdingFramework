@@ -23,6 +23,11 @@ public final class V7144Adapter implements AdapterBootstrap {
 				+ " signature=" + roomTargets.signature + " detail=" + roomTargets.detail);
 		V7144PlatformManifestCatalog.refresh();
 		V7144RaceBridge.initialize();
+		V7144RaceAttributeBridge.initialize();
+		V7144RaceHomeResourceBridge.initialize();
+		V7144CombatDamageBridge.initialize();
+		V7144MultiOutputProductionBridge.initialize();
+		V7144MultiResourceStorage.initialize();
 		UiTargetFingerprintVerifier.Result uiTargets = UiTargetFingerprintVerifier.verify();
 		ChoirDiagnostics.info("RESOURCE-DISPLAY compatibility-fingerprints matched=" + uiTargets.matches
 				+ " signature=" + uiTargets.signature + " gameJar=" + uiTargets.gameJar + " detail=" + uiTargets.detail);
@@ -37,7 +42,6 @@ public final class V7144Adapter implements AdapterBootstrap {
 		return true;
 	}
 	public void beforeGameInited() {
-		V7144RaceBridge.materializePreferences(CorePlatformRuntime.runtimeGeneration());
 		ResourceDisplayRuntime.observeAndRebuild(resourceDisplayResolver, "initBeforeGameInited");
 		if (!gameDisposableInstalled) {
 			gameDisposableInstalled = true;
@@ -45,6 +49,11 @@ public final class V7144Adapter implements AdapterBootstrap {
 				@Override protected void dispose() {
 					CorePlatformRuntime.gameDisposing(VERSION.VERSION_STRING, "GameDisposable.disposeAll");
 					V7144RaceBridge.disposed();
+					V7144RaceAttributeBridge.disposed();
+					V7144RaceHomeResourceBridge.disposed();
+					V7144CombatDamageBridge.disposed();
+					V7144MultiOutputProductionBridge.disposed();
+					V7144MultiResourceStorage.disposed();
 					ResourceDisplayRuntime.registryDisposed("GameDisposable.disposeAll");
 				}
 			};

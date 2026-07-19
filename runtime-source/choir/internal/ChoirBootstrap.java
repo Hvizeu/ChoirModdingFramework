@@ -5,6 +5,7 @@ import choir.internal.options.OptionsCapabilities;
 import choir.internal.platform.CorePlatformRuntime;
 import choir.internal.race.RaceRegistry;
 import choir.internal.room.RoomRegistry;
+import choir.internal.storage.AdvancedStoragePolicy;
 public final class ChoirBootstrap {
 	private static int invocationCount;
 	private static boolean initialized;
@@ -45,6 +46,8 @@ public final class ChoirBootstrap {
 		ChoirDiagnostics.info("CAPABILITY room-registration-spike=RUNTIME_CONFIRMED");
 	}
 	public static synchronized void beforeGameCreated() {
+		AdvancedStoragePolicy.registerOptions();
+		AdvancedStoragePolicy.latchForWorld();
 		CorePlatformRuntime.beforeGameCreated(adapter == null ? "<unavailable>" : adapter.gameVersion());
 	}
 	public static synchronized void beforeGameInited() {
@@ -77,6 +80,17 @@ public final class ChoirBootstrap {
 				|| capability == Capability.RACE_DATA_BACKED_REGISTRATION || capability == Capability.RACE_BOOST_PATCHING) return initialized && roomSpike;
 		if (capability == Capability.RACE_FOOD_PREFERENCE_PATCHING || capability == Capability.RACE_DRINK_PREFERENCE_PATCHING)
 			return initialized && roomSpike && RaceRegistry.preferenceCapabilityReady();
+		if (capability == Capability.RACE_TEXT_PATCHING || capability == Capability.RACE_RELATIONSHIP_PATCHING
+				|| capability == Capability.RACE_NUMERIC_ATTRIBUTE_PATCHING || capability == Capability.RACE_STANDING_PATCHING)
+			return initialized && roomSpike && choir.internal.race.RaceAttributeRegistry.capabilityReady();
+		if (capability == Capability.RACE_HOME_RESOURCE_REQUIREMENTS)
+			return initialized && roomSpike && choir.internal.race.RaceHomeResourceRegistry.capabilityReady();
+		if (capability == Capability.COMBAT_TACTICAL_DAMAGE_MULTIPLIERS)
+			return initialized && choir.internal.combat.CombatDamageRegistry.capabilityReady();
+		if (capability == Capability.PRODUCTION_MULTI_OUTPUT_ROOMS)
+			return initialized && choir.internal.production.MultiOutputProductionRegistry.capabilityReady();
+		if (capability == Capability.STORAGE_MULTI_RESOURCE_TILES)
+			return initialized && choir.internal.storage.MultiResourceStorageRegistry.capabilityReady();
 		return false;
 	}
 }

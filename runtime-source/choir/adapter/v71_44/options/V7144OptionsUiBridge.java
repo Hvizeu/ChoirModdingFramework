@@ -2,6 +2,7 @@ package choir.adapter.v71_44.options;
 
 import choir.internal.ChoirDiagnostics;
 import choir.internal.options.OptionsCapabilities;
+import choir.internal.storage.AdvancedStoragePolicy;
 import game.VERSION;
 
 /** Lazy because the main-menu shadow may be constructed before Choir's script callback. */
@@ -12,6 +13,9 @@ public final class V7144OptionsUiBridge {
 	private V7144OptionsUiBridge() { }
 
 	public static synchronized boolean initialize() {
+		// The framework page must exist even when the menu is opened before the
+		// non-selectable Choir script receives its first lifecycle callback.
+		AdvancedStoragePolicy.registerOptions();
 		if (verified) return available;
 		verified = true;
 		ChoirDiagnostics.beginValidationSession();

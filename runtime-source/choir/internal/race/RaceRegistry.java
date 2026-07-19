@@ -89,7 +89,7 @@ public final class RaceRegistry {
 	}
 	public static synchronized void materialized(long cycleId, List<String> resolvedDeclarations, List<String> targets) {
 		runtime = new RaceRuntimeSnapshot(cycleId, CorePlatformRuntime.runtimeGeneration(), resolvedDeclarations, targets,
-				runtime.materializedPreferenceTargets());
+				runtime.materializedPreferenceTargets(), runtime.materializedAttributeTargets(), runtime.materializedHomeResourceTargets());
 		ChoirDiagnostics.info("RACE materialization cycle=" + cycleId + " declarations=" + resolvedDeclarations.size() + " patchTargets=" + targets.size());
 	}
 	public static synchronized List<PreferenceTargetPlan> preferencePlans() {
@@ -149,14 +149,31 @@ public final class RaceRegistry {
 	}
 	public static synchronized void preferencesMaterialized(long runtimeGeneration, List<String> targets) {
 		runtime = new RaceRuntimeSnapshot(runtime.cycleId(), runtimeGeneration, runtime.resolvedDeclarations(),
-				runtime.materializedPatchTargets(), targets);
+				runtime.materializedPatchTargets(), targets, runtime.materializedAttributeTargets(), runtime.materializedHomeResourceTargets());
 		ChoirDiagnostics.info("RACE preference-materialization runtime.generation=" + runtimeGeneration + " targets=" + targets.size());
 	}
 	public static synchronized void preferenceAdapterReady(boolean ready) { preferenceAdapterReady = ready; }
 	public static synchronized boolean preferenceCapabilityReady() { return preferenceAdapterReady; }
 	static synchronized void resetPreferencesForTests() { preferencePatches.clear(); preferenceAdapterReady = false; }
 	public static synchronized RaceRuntimeSnapshot runtimeSnapshot() { return runtime; }
-	public static synchronized void disposeRuntime() { runtime = new RaceRuntimeSnapshot(0, CorePlatformRuntime.runtimeGeneration(), List.of(), List.of(), List.of()); }
+	public static synchronized void attributesMaterialized(long runtimeGeneration, List<String> targets) {
+		runtime = new RaceRuntimeSnapshot(runtime.cycleId(), runtimeGeneration, runtime.resolvedDeclarations(),
+				runtime.materializedPatchTargets(), runtime.materializedPreferenceTargets(), targets, runtime.materializedHomeResourceTargets());
+		ChoirDiagnostics.info("RACE attribute-materialization runtime.generation=" + runtimeGeneration + " targets=" + targets.size());
+	}
+	public static synchronized void homeResourcesMaterialized(long runtimeGeneration, List<String> targets) {
+		runtime = new RaceRuntimeSnapshot(runtime.cycleId(), runtimeGeneration, runtime.resolvedDeclarations(),
+				runtime.materializedPatchTargets(), runtime.materializedPreferenceTargets(),
+				runtime.materializedAttributeTargets(), targets);
+		ChoirDiagnostics.info("RACE home-resource-materialization runtime.generation=" + runtimeGeneration + " targets=" + targets.size());
+	}
+	public static synchronized RaceRegistrationResult patchText(choir.api.race.RaceTextPatch patch) { return RaceAttributeRegistry.register(patch); }
+	public static synchronized RaceRegistrationResult patchRelationship(choir.api.race.RaceRelationshipPatch patch) { return RaceAttributeRegistry.register(patch); }
+	public static synchronized RaceRegistrationResult patchNumeric(choir.api.race.RaceNumericPatch patch) { return RaceAttributeRegistry.register(patch); }
+	public static synchronized RaceRegistrationResult patchStanding(choir.api.race.RaceStandingPatch patch) { return RaceAttributeRegistry.register(patch); }
+	public static synchronized void disposeRuntime() {
+		runtime = new RaceRuntimeSnapshot(0, CorePlatformRuntime.runtimeGeneration(), List.of(), List.of(), List.of(), List.of(), List.of());
+	}
 	private static void requireProvider(String providerId) { if (!PlatformRuntime.isActive(providerId)) throw new IllegalStateException("Race provider is not active in the resolved platform graph: " + providerId); }
 	private static String targetId(String raceId, String boostableId) { return "choir.race.boost-multiplier:" + raceId + ':' + boostableId; }
 	private static boolean equivalent(RaceDeclaration a, RaceDeclaration b) { return a.providerId().equals(b.providerId()) && a.raceId().equals(b.raceId()) && a.displayName().equals(b.displayName()); }
