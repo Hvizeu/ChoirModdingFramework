@@ -1,0 +1,7 @@
+VERSION: "0.9.0",
+GAME_VERSION_MAJOR: 71,
+GAME_VERSION_MINOR: 44,
+NAME: "Choir Modding Framework",
+DESC: "Content-free v71.44 modding framework with stable APIs and centralized compatibility adapters.",
+AUTHOR: "Henrique",
+INFO: "Provides manifests, dependency resolution, typed lifecycle events, deterministic patch composition, race adapters, tactical damage composition, section-based multi-resource stockpiles, shared-capacity production storage, bounded multi-output workshop/refiner execution, native mod options, bounded framework diagnostics, named resource presentation, and version-pinned data-backed passive-room registration without gameplay content.",

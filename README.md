@@ -14,10 +14,11 @@ Current development version: `0.9.0`, targeting Songs of Syx `0.71.44` only.
 ## Players
 
 Install Choir as its own mod and keep it enabled whenever a mod declares Choir
-as required. Download validated runtime releases from this repository's GitHub
-**Releases** page or the official Workshop/Nexus distribution page. Do not copy
-Choir classes into another mod and do not enable the retired standalone Mod Menu
-Framework alongside Choir.
+as required. This repository is also a ready-to-deploy Workshop mod root: its
+`_Info.txt` and `V71` folder contain the validated Choir runtime. The exact JAR
+checksum is in [SHA256SUMS.txt](SHA256SUMS.txt). Do not copy Choir classes into
+another mod and do not enable the retired standalone Mod Menu Framework alongside
+Choir.
 
 Choir itself adds no rooms, races, resources, recipes, production chains, terrain,
 or balance content. Content mods remain responsible for their own data and saves.
@@ -31,11 +32,11 @@ Songs of Syx classes.
 
 ## Public source boundary
 
-This repository includes the public API and Choir-owned runtime implementation
-source. Exact V71.44 source replacements for vanilla classes are deliberately
-not published here because they are tied to proprietary game implementation
-contracts. The compiled, fingerprint-gated official runtime is distributed as a
-release artifact. See [runtime-source boundary](docs/RUNTIME_SOURCE_BOUNDARY.md).
+This repository includes the public API, Choir-owned runtime implementation
+source, and the validated Workshop runtime payload under `V71`. Exact V71.44
+source replacements for vanilla classes are deliberately not published here
+because they are tied to proprietary game implementation contracts. See
+[runtime-source boundary](docs/RUNTIME_SOURCE_BOUNDARY.md).
 
 ## Support and contributions
 
