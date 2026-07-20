@@ -1,0 +1,69 @@
+name: Bug report
+description: Report a reproducible problem in an official Choir build.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not post secrets, private paths, saves, or security vulnerabilities here. Follow SECURITY.md for sensitive reports.
+  - type: input
+    id: choir-version
+    attributes:
+      label: Choir version and build ID
+      placeholder: "0.9.0 / choir-v71_44-..."
+    validations:
+      required: true
+  - type: input
+    id: game-version
+    attributes:
+      label: Songs of Syx version
+      placeholder: "0.71.44"
+    validations:
+      required: true
+  - type: dropdown
+    id: installation
+    attributes:
+      label: Installation source
+      options:
+        - GitHub Releases
+        - Steam Workshop
+        - Maven API consumer build
+        - Private development build
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: mod-list
+    attributes:
+      label: Relevant enabled mods
+      description: List Choir consumers or mods involved in the problem. Do not attach a save containing private information.
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Explain the smallest repeatable sequence that triggers the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior and safe diagnostic excerpts
+      description: Redact user names and absolute paths before posting logs.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmation
+      options:
+        - label: I used an official release or clearly identified a private development build.
+          required: true
+        - label: I removed credentials, personal paths, saves, and other private data.
+          required: true

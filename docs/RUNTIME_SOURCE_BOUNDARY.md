@@ -11,3 +11,7 @@ The official runtime JAR contains the validated fingerprint-gated implementation
 Contributors should propose behavioral changes through public API and adapter code;
 source-shadow changes require separate compatibility review and proof against the
 supported game build.
+
+Public availability of Choir-owned runtime source grants only the permissions in
+the repository [LICENSE](../LICENSE). It does not make the project open source and
+does not authorize independent builds or redistribution.

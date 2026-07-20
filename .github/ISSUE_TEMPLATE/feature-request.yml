@@ -1,0 +1,36 @@
+name: Feature request
+description: Propose a general compatibility capability for mod authors.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Modding problem
+      description: What can mod authors not do safely today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Suggested public behavior
+      description: Describe the desired result without depending on Choir internals or vanilla Java types.
+    validations:
+      required: true
+  - type: textarea
+    id: consumers
+    attributes:
+      label: Example consumers
+      description: Which kinds of mods would use this capability?
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility and save considerations
+      description: Mention IDs, registries, saves, UI, AI, or conflicts that may be affected.
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope confirmation
+      options:
+        - label: This is a general framework capability, not a request for Choir to add gameplay content or balance changes.
+          required: true

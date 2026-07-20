@@ -19,3 +19,8 @@ from Maven Central, build against the official API artifact supplied with the
 validated release or install that artifact locally. Maven is a development-time
 dependency tool only; players continue to install Choir as a normal Songs of Syx
 mod.
+
+Maven Central is an authorized delivery channel only for the unmodified official
+`io.github.hvizeu:choir-api` artifacts. It is not permission to republish Choir,
+publish modified coordinates as Choir, or bundle the API/runtime into another
+mod. See [LICENSE](../LICENSE) and the [license FAQ](LICENSE_FAQ.md).

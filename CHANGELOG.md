@@ -2,6 +2,13 @@
 
 ## Unreleased - Choir 0.9.0 household resources
 
+- Clarified the public source-available license, contribution rules, security
+  reporting, official binary distribution boundary, and player installation
+  instructions.
+- Added public bug/feature forms, a pull-request checklist, and a plain-language
+  license FAQ.
+- Ensured locally built `choir-api` main and source JARs carry the project license
+  and third-party notice under `META-INF`.
 - Added a public, additive household-resource API so content mods can make a
   normal resource available to a race and household class without replacing the
   game's home system.
