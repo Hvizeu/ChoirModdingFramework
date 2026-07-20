@@ -20,7 +20,7 @@ import snake2d.LOG;
  * evidence for a later Phase 1 review.
  */
 public final class ChoirDiagnostics {
-	public static final String BUILD_ID = "choir-v71_44-household-resource-requirements-20260719.1";
+	public static final String BUILD_ID = "choir-v71_44-storage-depot-compatibility-20260720.1";
 	private static final DateTimeFormatter FILE_TIME = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS").withZone(ZoneOffset.UTC);
 	private static Path sessionLog;
 	private static boolean buildIdentityLogged;

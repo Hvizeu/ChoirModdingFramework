@@ -29,6 +29,7 @@ public final class MultiResourceStorageRegistry {
 	private static final AtomicLong pickupReservations = new AtomicLong();
 	private static final AtomicLong incomingReservations = new AtomicLong();
 	private static final AtomicLong failures = new AtomicLong();
+	private static final String STOCKPILE_ROOM_KEY = "_STOCKPILE";
 
 	private MultiResourceStorageRegistry() { }
 
@@ -81,7 +82,7 @@ public final class MultiResourceStorageRegistry {
 	public static boolean requiresAdvancedStorage(String roomKey) {
 		if (MultiOutputProductionRegistry.hasActiveTarget(roomKey)) return true;
 		if (hasActiveRoomPolicy(roomKey)) return true;
-		return AdvancedStoragePolicy.advancedVanillaRoomsEnabled();
+		return supportsGlobalAdvancedStorage(roomKey) && AdvancedStoragePolicy.advancedVanillaRoomsEnabled();
 	}
 
 	/** Resolves activation for one exact production industry. */
@@ -162,6 +163,10 @@ public final class MultiResourceStorageRegistry {
 	private static MultiResourceStorageDeclaration activeDeclaration(String roomKey) {
 		MultiResourceStorageDeclaration declaration = declaration(roomKey);
 		return declaration != null && PlatformRuntime.isActive(declaration.providerId()) ? declaration : null;
+	}
+
+	private static boolean supportsGlobalAdvancedStorage(String roomKey) {
+		return STOCKPILE_ROOM_KEY.equals(roomKey);
 	}
 
 	private static void rebuild() {

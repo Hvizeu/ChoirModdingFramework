@@ -124,6 +124,16 @@ public final class V7144MultiResourceStorage {
 				&& stockpileAdvanced((StockpileInstance) instance);
 	}
 
+	public static boolean needsExactDestinationSelection(RoomInstance instance) {
+		return isFlexibleStockpile(instance)
+				|| instance instanceof V7144ProductionStorageOwner
+				&& ((V7144ProductionStorageOwner) instance).choirUsesAdvancedProductionStorage();
+	}
+
+	public static boolean needsExactSourceSelection(RoomInstance instance) {
+		return needsExactDestinationSelection(instance);
+	}
+
 	/** One physical shelf exposes one storage section per configured resource kind. */
 	public static int stockpileAssignmentCapacity(StockpileInstance instance) {
 		if (instance == null) return 0;

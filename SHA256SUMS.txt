@@ -1,1 +1,1 @@
-ce0584ce195c892d54e784b5d285249e759fbfbece6ccdd1c6a184df1745b30d  V71/script/ChoirModdingFramework.jar
+3d42086e9e4946a00bbe210b128dfe8e930ca0f3b1c8203184e1e340a0e3b7d4  V71/script/ChoirModdingFramework.jar

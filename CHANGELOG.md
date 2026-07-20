@@ -7,6 +7,10 @@
   game's home system.
 - Household requirements compose by maximum, preserve existing resource order,
   and use the game's normal shopping, wear, and replacement behaviour.
+- Kept Advanced Storage global replacement scoped to stockpiles so vanilla
+  import and export depots keep their normal source/destination logistics.
+- Multi-output rooms and explicitly registered advanced-storage rooms still use
+  Choir's exact resource-aware storage selection when required.
 - Advanced the current development Maven coordinate to `choir-api:0.9.0`.
 
 ## Unreleased - Choir 0.8.2 stockpile section model
